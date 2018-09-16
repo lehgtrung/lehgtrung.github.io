@@ -1,7 +1,7 @@
 # Site settings
 title: Trung Le blog
 email: 
-description: "A computer science enthusiast"
+# description: "A computer science enthusiast"
 baseurl: ""
 url: "http://lehgtrung.github.io"
 # twitter_username: trungkak
