@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title:  "Mạng nơ-ron hồi quy (RNN) và mạng Bộ nhớ ngắn hạn dài (LSTM)"
+title:  "Mạng nơ-ron hồi quy (RNN) và mạng Bộ nhớ ngắn hạn dài (LSTM) (Phần 1)"
 excerpt: "Mô hình học đứng đằng sau thành công của những ứng dụng như Dịch tự động (machine translation), Nhận dạng tiếng nói (Speech recognition) hay Hệ hỏi đáp (Question answering system),.."
 date:   2018-09-09 11:00:00
 mathjax: true
@@ -12,7 +12,7 @@ mathjax: true
 * [Huấn luyện một RNN](#training)
 * [Thách thức trong việc học các phụ thuộc dài hạn](#challenge)
 * [Bộ nhớ ngắn hạn dài (LSTM)](#lstm)
-* [Lập trình Pytorch](#coding)
+* [Lập trình RNN](#coding)
 * [Tài liệu tham khảo](#references)
 
 ### Giới thiệu về RNN <a name="introduction"></a>
@@ -44,34 +44,6 @@ Với một số lượng hữu hạn các bước thời gian, mô hình trong 
 
 ### Lập trình Pytorch <a name="coding"></a>
 
-Trong phần này chúng ta sẽ lập trình một bộ phân lớp giới tính dựa trên tên bằng LSTM API của thư viện Pytorch \[1\]. 
-
-```python
-import torch.nn as nn
-
-class RNN(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(RNN, self).__init__()
-
-        self.hidden_size = hidden_size
-
-        self.i2h = nn.Linear(input_size + hidden_size, hidden_size)
-        self.i2o = nn.Linear(input_size + hidden_size, output_size)
-        self.softmax = nn.LogSoftmax(dim=1)
-
-    def forward(self, input, hidden):
-        combined = torch.cat((input, hidden), 1)
-        hidden = self.i2h(combined)
-        output = self.i2o(combined)
-        output = self.softmax(output)
-        return output, hidden
-
-    def initHidden(self):
-        return torch.zeros(1, self.hidden_size)
-
-n_hidden = 128
-rnn = RNN(n_letters, n_hidden, n_categories)
-```
 
 ### Tài liệu tham khảo <a name="references"></a>
 \[1\]: https://pytorch.org/
