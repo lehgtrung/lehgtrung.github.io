@@ -1,8 +1,8 @@
 ---
 layout: post
 comments: true
-title:  "Mạng nơ-ron hồi quy (RNN) và mạng Bộ nhớ ngắn hạn dài (LSTM) (Phần 1)"
-excerpt: "Mô hình học đứng đằng sau thành công của những ứng dụng như Dịch tự động (machine translation), Nhận dạng tiếng nói (Speech recognition) hay Hệ hỏi đáp (Question answering system),.."
+title:  "Recurrent anttentional neural networks"
+excerpt: ""
 date:   2018-09-09 11:00:00
 mathjax: true
 ---
