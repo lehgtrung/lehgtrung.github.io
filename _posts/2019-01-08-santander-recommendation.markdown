@@ -17,7 +17,7 @@ individual needs of all customers and ensure their satisfaction no matter where 
 
 In this competition, we are provided with *1.5* years of customers behavior data from Santander bank to predict what new 
 products customers will purchase. The data starts at *2015-01-28* and has monthly records of products a customer has, 
-such as "credit card", "savings account", etc. We will predict what additional products a customer will get in the 
+such as "credit card", "savings account", etc. We will predict what **additional** products a customer will get in the 
 last month, *2016-06-28*, in addition to what they already have at *2016-05-28*. 
 These products are the columns named: *ind_(xyz)_ult1*, which are the columns $$#25 - #48$$ in the training data. 
 We will predict what a customer will buy in addition to what they already had at *2016-05-28*. 
@@ -94,5 +94,8 @@ foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv
 foo@bar:~$ mkdir train
 foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv
 ```
-This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. For each month, I construct a new file that contains user information and **new** product
-that they added in the next month.
+This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. For each file, I construct a new file that contains 
+user id and **new** product that they added in the next month.
+```python
+def 
+```

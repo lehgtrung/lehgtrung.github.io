@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Trung Le blog</title>
+    <description></description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Fri, 11 Jan 2019 18:13:12 +0700</pubDate>
+    <lastBuildDate>Fri, 11 Jan 2019 18:13:12 +0700</lastBuildDate>
+    <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>Santander Product Recommendation</title>
+        <description>&lt;p&gt;&lt;em&gt;Under their current system, a small number of Santander’s customers receive many recommendations while many others 
+rarely see any resulting in an uneven customer experience. In their second competition, Santander is challenging 
+Kagglers to predict which products their existing customers will use in the next month based on their past behavior 
+and that of similar customers. With a more effective recommendation system in place, Santander can better meet the 
+individual needs of all customers and ensure their satisfaction no matter where they are in life.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;data-description&quot;&gt;Data Description&lt;/h2&gt;
+
+&lt;p&gt;In this competition, we are provided with &lt;em&gt;1.5&lt;/em&gt; years of customers behavior data from Santander bank to predict what new 
+products customers will purchase. The data starts at &lt;em&gt;2015-01-28&lt;/em&gt; and has monthly records of products a customer has, 
+such as “credit card”, “savings account”, etc. We will predict what &lt;strong&gt;additional&lt;/strong&gt; products a customer will get in the 
+last month, &lt;em&gt;2016-06-28&lt;/em&gt;, in addition to what they already have at &lt;em&gt;2016-05-28&lt;/em&gt;. 
+These products are the columns named: &lt;em&gt;ind_(xyz)_ult1&lt;/em&gt;, which are the columns &lt;script type=&quot;math/tex&quot;&gt;#25 - #48&lt;/script&gt; in the training data. 
+We will predict what a customer will buy in addition to what they already had at &lt;em&gt;2016-05-28&lt;/em&gt;.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Column Name&lt;/th&gt;
+      &lt;th&gt;Description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;fecha_dato&lt;/td&gt;
+      &lt;td&gt;The table is partitioned for this column&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ncodpers&lt;/td&gt;
+      &lt;td&gt;Customer code&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_empleado&lt;/td&gt;
+      &lt;td&gt;Employee index: A active, B ex employed, F filial, N not employee, P pasive&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;pais_residencia&lt;/td&gt;
+      &lt;td&gt;Customer’s Country residence&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;sexo&lt;/td&gt;
+      &lt;td&gt;Customer’s sex&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;age&lt;/td&gt;
+      &lt;td&gt;Age&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;fecha_alta&lt;/td&gt;
+      &lt;td&gt;The date in which the customer became as the first holder of a contract in the bank&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_nuevo&lt;/td&gt;
+      &lt;td&gt;New customer Index. 1 if the customer registered in the last 6 months.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;antiguedad&lt;/td&gt;
+      &lt;td&gt;Customer seniority (in months)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;indrel&lt;/td&gt;
+      &lt;td&gt;1 (First/Primary), 99 (Primary customer during the month but not at the end of the month)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ult_fec_cli_1t&lt;/td&gt;
+      &lt;td&gt;Last date as primary customer (if he isn’t at the end of the month)  Customer type at the beginning of the month ,1 (First/Primary customer), 2 (co-owner ),P (Potential),3 (former primary), 4(former co-owner)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;tiprel_1mes&lt;/td&gt;
+      &lt;td&gt;Customer relation type at the beginning of the month, A (active), I (inactive), P (former customer),R (Potential)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;indresi&lt;/td&gt;
+      &lt;td&gt;Residence index (S (Yes) or N (No) if the residence country is the same than the bank country)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;indext&lt;/td&gt;
+      &lt;td&gt;Foreigner index (S (Yes) or N (No) if the customer’s birth country is different than the bank country)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;conyuemp&lt;/td&gt;
+      &lt;td&gt;Spouse index. 1 if the customer is spouse of an employee&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;canal_entrada&lt;/td&gt;
+      &lt;td&gt;channel used by the customer to join&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;indfall&lt;/td&gt;
+      &lt;td&gt;Deceased index. N/S&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;tipodom&lt;/td&gt;
+      &lt;td&gt;Addres type. 1, primary address&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;cod_prov&lt;/td&gt;
+      &lt;td&gt;Province code (customer’s address)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;nomprov&lt;/td&gt;
+      &lt;td&gt;Province name&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_actividad_cliente&lt;/td&gt;
+      &lt;td&gt;Activity index (1, active customer; 0, inactive customer)&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;renta&lt;/td&gt;
+      &lt;td&gt;Gross income of the household&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;segmento&lt;/td&gt;
+      &lt;td&gt;segmentation: 01 - VIP, 02 - Individuals 03 - college graduated&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_ahor_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Saving Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_aval_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Guarantees&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_cco_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Current Accounts&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_cder_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Derivada Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_cno_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Payroll Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_ctju_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Junior Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_ctma_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Más particular Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_ctop_fin_ult1&lt;/td&gt;
+      &lt;td&gt;particular Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_ctpp_fin_ult1&lt;/td&gt;
+      &lt;td&gt;particular Plus Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_deco_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Short-term deposits&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_deme_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Medium-term deposits&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_dela_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Long-term deposits&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_ecue_fin_ult1&lt;/td&gt;
+      &lt;td&gt;e-account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_fond_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Funds&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_hip_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Mortgage&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_plan_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Pensions&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_pres_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Loans&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_reca_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Taxes&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_tjcr_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Credit Card&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_valo_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Securities&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_viv_fin_ult1&lt;/td&gt;
+      &lt;td&gt;Home Account&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_nomina_ult1&lt;/td&gt;
+      &lt;td&gt;Payroll&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_nom_pens_ult1&lt;/td&gt;
+      &lt;td&gt;Pensions&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;ind_recibo_ult1&lt;/td&gt;
+      &lt;td&gt;Direct Debit&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;objective&quot;&gt;Objective&lt;/h2&gt;
+&lt;p&gt;We are provided with &lt;script type=&quot;math/tex&quot;&gt;1.5&lt;/script&gt; years of customer data of Santander Banks from &lt;strong&gt;January 2015&lt;/strong&gt; to &lt;strong&gt;May 2015&lt;/strong&gt; of nearly &lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt; million distinct users.
+The goal of this competition is to predict top &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; most likely product that &lt;em&gt;929,615&lt;/em&gt; customers in the test set would purchase in &lt;strong&gt;June 2016&lt;/strong&gt;. The test data 
+is split randomly to public and private set using a 30-70% random split. The public leaderboard is ranked on the public test set whereas 
+the private set is used to calculate the final standings. The scoring was evaluated using &lt;em&gt;Mean Average Precision&lt;/em&gt; at &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; (MAP@7):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum_{k=1}^{min(m,7)} P(k) \end{aligned}&lt;/script&gt;
+
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;|U|&lt;/script&gt; is the number of rows (users in two time points), &lt;script type=&quot;math/tex&quot;&gt;P(k)&lt;/script&gt; is the precision at cutoff &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; is the number of predicted products, and 
+&lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; is the number of added products for the given user at that time point. If &lt;script type=&quot;math/tex&quot;&gt;m = 0&lt;/script&gt;, the precision is defined to be &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;my-approach&quot;&gt;My Approach&lt;/h2&gt;
+&lt;p&gt;This is a interesting competition since we have the freedom to how we process the data, extract features and build our model. At first glance, I want to load the whole training data
+to my 8GB RAM machine to do some exploratory analysis. But since the training data was too big to fit to machine memory, I have to think of a more memory efficient way to handle the data.
+As every row in training data has a unique month, I use a simple shell script to divide the data into several files, each file contains only &lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt; partitioned month data.&lt;/p&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; tail &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; +2 train_ver2.csv &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; train_no_header.csv
+&lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; mkdir train
+&lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; awk &lt;span class=&quot;nt&quot;&gt;-F&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'{print&amp;gt;&quot;train/&quot;$1}'&lt;/span&gt; train_no_header.csv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This results in several files in &lt;code&gt;train&lt;/code&gt; folder like: &lt;code&gt;2015-01-28&lt;/code&gt; which contains data from Jan 2015 and so on. For each file, I construct a new file that contains 
+user id and &lt;strong&gt;new&lt;/strong&gt; product that they added in the next month.&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Wed, 09 Jan 2019 18:00:00 +0700</pubDate>
+        <link>http://localhost:4000/2019/01/09/santander-recommendation/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/09/santander-recommendation/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Logistics Regression</title>
+        <description>&lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;giới-thiệu-&quot;&gt;Giới thiệu &lt;a name=&quot;introduction&quot;&gt;&lt;/a&gt;&lt;/h3&gt;
+</description>
+        <pubDate>Tue, 01 Jan 2019 18:00:00 +0700</pubDate>
+        <link>http://localhost:4000/2019/01/01/logistic-regression/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/01/logistic-regression/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Recurrent anttentional neural networks</title>
+        <description>&lt;h1 id=&quot;mục-lục&quot;&gt;Mục lục&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#introduction&quot;&gt;Giới thiệu về RNN&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#training&quot;&gt;Huấn luyện một RNN&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#challenge&quot;&gt;Thách thức trong việc học các phụ thuộc dài hạn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#lstm&quot;&gt;Bộ nhớ ngắn hạn dài (LSTM)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#coding&quot;&gt;Lập trình RNN&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#references&quot;&gt;Tài liệu tham khảo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;giới-thiệu-về-rnn-&quot;&gt;Giới thiệu về RNN &lt;a name=&quot;introduction&quot;&gt;&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;Nếu như &lt;strong&gt;Mạng nơ-ron tích chập (Convolutional neural network - CNN)&lt;/strong&gt; là mô hình mạng nơ-ron chuyên dùng cho loại dữ liệu có dạng lưới hai chiều như hình ảnh thì &lt;strong&gt;Mạng nơ-ron hồi quy (Recurrent neural network)&lt;/strong&gt; hay &lt;strong&gt;RNN&lt;/strong&gt; là một nhánh của mạng nơ-ron nhân tạo được thiết kế đặc biệt cho việc mô hình hóa dữ liệu có tính chất nối tiếp nhau - dữ liệu dạng chuỗi (sequential data). Khác với dữ liệu ảnh (mỗi ảnh được xem là một điểm dữ liệu riêng biệt) thì dữ liệu chuỗi xem các điểm dữ liệu có phía sau có mối liên hệ chặt chẽ với những điểm dữ liệu trước nó. Lấy ví dụ về một dạng dữ liệu chuỗi: các từ trong một câu, ví dụ &lt;em&gt;“Paris là thủ đô của nước __“&lt;/em&gt;, dễ biết rằng từ duy nhất phù hợp để viết tiếp trong câu trên là &lt;em&gt;“Pháp”&lt;/em&gt; - từ được tạo ra dưới mối liên hệ của các từ trước đó. Các khung hình trong một bộ phim hay giá cổ phiếu trong vòng một tuần cũng là những ví dụ của loại dữ liệu chuỗi.&lt;/p&gt;
+
+&lt;p&gt;Vấn đề lớn nhất gặp phải khi xử lý loại dữ liệu chuỗi là người ta không biết một điểm dữ liệu có liên hệ với bao nhiêu điểm dữ liệu phía trước nó để đưa vào mô hình, cái mà yêu cầu chuỗi đầu vào phải có kích thước cố định. Xét bài toán &lt;em&gt;mô hình hóa ngôn ngữ&lt;/em&gt; (language modeling) - bài toán dự đoán từ tiếp theo trong một chuỗi các từ cho trước. Trong bài toán này, để dự đoán từ tiếp theo ta cần biết mối quan hệ của nó với các từ trước nó. Mối quan hệ đó có thể ngắn như trong câu &lt;em&gt;“Ai cũng biết rằng, mặt trời mọc đằng đông”&lt;/em&gt; mối quan hệ của từ &lt;strong&gt;đông&lt;/strong&gt; chỉ dài đến &lt;strong&gt;mặt trời&lt;/strong&gt; cách nó 2 từ, hoặc thậm chí dài như câu &lt;em&gt;“Con gì đầu rồng đuôi phụng cánh tiên, ngày năm bảy vợ, tối ngủ riêng một mình ?”&lt;/em&gt;, trong câu này, dấu &lt;strong&gt;chấm hỏi (?)&lt;/strong&gt; phụ thuộc đến từ để hỏi ở đầu câu - &lt;strong&gt;con gì&lt;/strong&gt; cách nó 17 từ. Trước đây, một trong những cách phổ biến được dùng đó là &lt;em&gt;giả định về sự phụ thuộc&lt;/em&gt;, nó nói rằng một điểm dữ liệu trong chuỗi chỉ phụ thuộc với một số lượng nhất định &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt; điểm dữ liệu trước đó. Rõ ràng giả định này là sai với &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt; bất kỳ (như trong trường hợp dấu chấm hỏi và từ để hỏi: một câu hỏi có thể dài vô hạn từ), tuy nhiên nó đã được áp dụng trong các mô hình như xử lý tiếng nói hay mô hình hóa ngôn ngữ.&lt;/p&gt;
+
+&lt;p&gt;Khác với các mô hình sử dụng giả định về phụ thuộc, mạng RNN, trên lý thuyết, có khả năng nắm bắt được sự phụ thuộc với độ dài bất kỳ. Để làm được điều đó, trong quá trình học, RNN sử dụng một loại &lt;em&gt;bộ nhớ&lt;/em&gt; được gọi là &lt;em&gt;trạng thái ẩn&lt;/em&gt;. Hình 1. miêu tả một mô hình RNN đơn giản, trong đó &lt;strong&gt;RNN cell&lt;/strong&gt; là một mạng nơ-ron, nó nhận vào một &lt;em&gt;đầu vào&lt;/em&gt; (input) và một &lt;em&gt;trạng thái ẩn&lt;/em&gt; (hidden state) ở thời điểm trước đó để tạo ra một &lt;em&gt;đầu ra&lt;/em&gt; (output) và một trạng thái ẩn tại thời điểm tiếp theo. Có thể hình dung, mô hình này như một vòng lặp duyệt qua tất cả các phần tử của một chuỗi đầu vào, tương ứng với từng phần tử thì RNN cell sẽ tạo ra một đầu ra và một trạng thái ẩn. Trạng thái ẩn đó sẽ được truyền đi cho việc tính toán ở đầu vào ngay sau nó. Với mỗi lần RNN cell tính toán một đầu vào, ta gọi nó là một &lt;em&gt;bước thời gian&lt;/em&gt; (time step).&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;http://farm2.staticflickr.com/1904/45027635721_78f337c8f5_b.jpg&quot; /&gt;
+  &lt;br /&gt;
+  &lt;br /&gt;
+  Hình 1. Mô hình RNN đơn giản tại một bước thời gian
+&lt;/p&gt;
+
+&lt;p&gt;Với một số lượng hữu hạn các bước thời gian, mô hình trong Hình 1. có thể được khai triển ra như trong Hình 2.&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;http://farm2.staticflickr.com/1956/44329996054_01f9ea900c_b.jpg&quot; /&gt;
+  &lt;br /&gt;
+  &lt;br /&gt;
+  Hình 2. Mô hình RNN đơn giản được khai triển ra trên nhiều bước thời gian
+&lt;/p&gt;
+
+&lt;p&gt;Việc xác định một bước thời gian&lt;/p&gt;
+
+&lt;h3 id=&quot;tài-liệu-tham-khảo-&quot;&gt;Tài liệu tham khảo &lt;a name=&quot;references&quot;&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;[1]: https://pytorch.org/&lt;/p&gt;
+</description>
+        <pubDate>Sun, 09 Sep 2018 18:00:00 +0700</pubDate>
+        <link>http://localhost:4000/2018/09/09/recurrent-attentional-networks/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/09/09/recurrent-attentional-networks/</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

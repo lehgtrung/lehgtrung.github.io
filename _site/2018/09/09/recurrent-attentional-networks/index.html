@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Recurrent anttentional neural networks</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="">
+    <link rel="canonical" href="http://localhost:4000/2018/09/09/recurrent-attentional-networks/">
+    <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Trung Le blog posts" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-3698471-23', 'auto');
+      ga('send', 'pageview');
+    </script>
+
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+
+  <div class="wrap">
+
+    <div style="float:left; margin-top:10px; margin-right:10px;">
+    <a href="/feed.xml">
+      <img src="/assets/identicon.png" width="40">
+    </a>
+    </div>
+
+    <a class="site-title" href="/">Trung Le blog</a>
+    
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="0 0 18 15" enable-background="new 0 0 18 15" xml:space="preserve">
+          <path fill="#505050" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0
+            h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#505050" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484
+            h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#505050" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0
+            c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+      <div class="trigger">
+        
+          <a class="page-link" href="/about/">About</a>
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>Recurrent anttentional neural networks</h1>
+    <p class="meta">Sep 9, 2018</p>
+  </header>
+
+  <article class="post-content">
+  <h1 id="mục-lục">Mục lục</h1>
+<ul>
+  <li><a href="#introduction">Giới thiệu về RNN</a></li>
+  <li><a href="#training">Huấn luyện một RNN</a></li>
+  <li><a href="#challenge">Thách thức trong việc học các phụ thuộc dài hạn</a></li>
+  <li><a href="#lstm">Bộ nhớ ngắn hạn dài (LSTM)</a></li>
+  <li><a href="#coding">Lập trình RNN</a></li>
+  <li><a href="#references">Tài liệu tham khảo</a></li>
+</ul>
+
+<h3 id="giới-thiệu-về-rnn-">Giới thiệu về RNN <a name="introduction"></a></h3>
+
+<p>Nếu như <strong>Mạng nơ-ron tích chập (Convolutional neural network - CNN)</strong> là mô hình mạng nơ-ron chuyên dùng cho loại dữ liệu có dạng lưới hai chiều như hình ảnh thì <strong>Mạng nơ-ron hồi quy (Recurrent neural network)</strong> hay <strong>RNN</strong> là một nhánh của mạng nơ-ron nhân tạo được thiết kế đặc biệt cho việc mô hình hóa dữ liệu có tính chất nối tiếp nhau - dữ liệu dạng chuỗi (sequential data). Khác với dữ liệu ảnh (mỗi ảnh được xem là một điểm dữ liệu riêng biệt) thì dữ liệu chuỗi xem các điểm dữ liệu có phía sau có mối liên hệ chặt chẽ với những điểm dữ liệu trước nó. Lấy ví dụ về một dạng dữ liệu chuỗi: các từ trong một câu, ví dụ <em>“Paris là thủ đô của nước __“</em>, dễ biết rằng từ duy nhất phù hợp để viết tiếp trong câu trên là <em>“Pháp”</em> - từ được tạo ra dưới mối liên hệ của các từ trước đó. Các khung hình trong một bộ phim hay giá cổ phiếu trong vòng một tuần cũng là những ví dụ của loại dữ liệu chuỗi.</p>
+
+<p>Vấn đề lớn nhất gặp phải khi xử lý loại dữ liệu chuỗi là người ta không biết một điểm dữ liệu có liên hệ với bao nhiêu điểm dữ liệu phía trước nó để đưa vào mô hình, cái mà yêu cầu chuỗi đầu vào phải có kích thước cố định. Xét bài toán <em>mô hình hóa ngôn ngữ</em> (language modeling) - bài toán dự đoán từ tiếp theo trong một chuỗi các từ cho trước. Trong bài toán này, để dự đoán từ tiếp theo ta cần biết mối quan hệ của nó với các từ trước nó. Mối quan hệ đó có thể ngắn như trong câu <em>“Ai cũng biết rằng, mặt trời mọc đằng đông”</em> mối quan hệ của từ <strong>đông</strong> chỉ dài đến <strong>mặt trời</strong> cách nó 2 từ, hoặc thậm chí dài như câu <em>“Con gì đầu rồng đuôi phụng cánh tiên, ngày năm bảy vợ, tối ngủ riêng một mình ?”</em>, trong câu này, dấu <strong>chấm hỏi (?)</strong> phụ thuộc đến từ để hỏi ở đầu câu - <strong>con gì</strong> cách nó 17 từ. Trước đây, một trong những cách phổ biến được dùng đó là <em>giả định về sự phụ thuộc</em>, nó nói rằng một điểm dữ liệu trong chuỗi chỉ phụ thuộc với một số lượng nhất định <script type="math/tex">N</script> điểm dữ liệu trước đó. Rõ ràng giả định này là sai với <script type="math/tex">N</script> bất kỳ (như trong trường hợp dấu chấm hỏi và từ để hỏi: một câu hỏi có thể dài vô hạn từ), tuy nhiên nó đã được áp dụng trong các mô hình như xử lý tiếng nói hay mô hình hóa ngôn ngữ.</p>
+
+<p>Khác với các mô hình sử dụng giả định về phụ thuộc, mạng RNN, trên lý thuyết, có khả năng nắm bắt được sự phụ thuộc với độ dài bất kỳ. Để làm được điều đó, trong quá trình học, RNN sử dụng một loại <em>bộ nhớ</em> được gọi là <em>trạng thái ẩn</em>. Hình 1. miêu tả một mô hình RNN đơn giản, trong đó <strong>RNN cell</strong> là một mạng nơ-ron, nó nhận vào một <em>đầu vào</em> (input) và một <em>trạng thái ẩn</em> (hidden state) ở thời điểm trước đó để tạo ra một <em>đầu ra</em> (output) và một trạng thái ẩn tại thời điểm tiếp theo. Có thể hình dung, mô hình này như một vòng lặp duyệt qua tất cả các phần tử của một chuỗi đầu vào, tương ứng với từng phần tử thì RNN cell sẽ tạo ra một đầu ra và một trạng thái ẩn. Trạng thái ẩn đó sẽ được truyền đi cho việc tính toán ở đầu vào ngay sau nó. Với mỗi lần RNN cell tính toán một đầu vào, ta gọi nó là một <em>bước thời gian</em> (time step).</p>
+
+<p align="center">
+  <img src="http://farm2.staticflickr.com/1904/45027635721_78f337c8f5_b.jpg" />
+  <br />
+  <br />
+  Hình 1. Mô hình RNN đơn giản tại một bước thời gian
+</p>
+
+<p>Với một số lượng hữu hạn các bước thời gian, mô hình trong Hình 1. có thể được khai triển ra như trong Hình 2.</p>
+
+<p align="center">
+  <img src="http://farm2.staticflickr.com/1956/44329996054_01f9ea900c_b.jpg" />
+  <br />
+  <br />
+  Hình 2. Mô hình RNN đơn giản được khai triển ra trên nhiều bước thời gian
+</p>
+
+<p>Việc xác định một bước thời gian</p>
+
+<h3 id="tài-liệu-tham-khảo-">Tài liệu tham khảo <a name="references"></a></h3>
+<p>[1]: https://pytorch.org/</p>
+
+  </article>
+
+  <!-- mathjax -->
+  
+  <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+  
+  <!-- disqus comments -->
+ 
+ <div id="disqus_thread"></div>
+  <script type="text/javascript">
+      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+      var disqus_shortname = 'lehgtrung-github-io'; // required: replace example with your forum shortname
+
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
+  
+</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <!-- <h2 class="footer-heading">Trung Le blog</h2> -->
+
+    <div class="footer-col-1 column">
+      <ul>
+        <li>Trung Le blog</li>
+        <!-- <li><a href="mailto:"></a></li> -->
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+      <ul>
+        <li>
+          <a href="https://github.com/lehgtrung">
+            <span class="icon github">
+              <svg version="1.1" class="github-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#C2C2C2" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761
+                c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32
+                c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472
+                c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037
+                C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65
+                c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261
+                c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082
+                c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129
+                c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            <span class="username">lehgtrung</span>
+          </a>
+        </li>
+        
+      </ul>
+    </div>
+
+    <div class="footer-col-3 column">
+      <p class="text"></p>
+    </div>
+
+  </div>
+
+</footer>
+
+
+    </body>
+</html>
