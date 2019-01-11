@@ -90,9 +90,53 @@ to my 8GB RAM machine to do some exploratory analysis. But since the training da
 As every row in training data has a unique month, I use a simple shell script to divide the data into several files, each file contains only $$1$$ partitioned month data.
 
 ```console
-foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv
-foo@bar:~$ mkdir train
-foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv
+foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv      # New training data file with header removed
+foo@bar:~$ mkdir train                                          # Make a new folder named train
+foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv    # Gather rows begining with the same pattern which is the date into a file
 ```
-This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. For each month, I construct a new file that contains user information and **new** product
-that they added in the next month.
+This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. 
+For each month, I construct a new file that contains user information and **new** product that they added in the next month with the 
+following code. 
+
+```python
+import pandas as pd
+import numpy as np
+
+HEADER = ["ncodpers", "ind_ahor_fin_ult1", "ind_aval_fin_ult1",
+          "ind_cco_fin_ult1", "ind_cder_fin_ult1", "ind_cno_fin_ult1",
+          "ind_ctju_fin_ult1", "ind_ctma_fin_ult1", "ind_ctop_fin_ult1",
+          "ind_ctpp_fin_ult1", "ind_deco_fin_ult1", "ind_deme_fin_ult1",
+          "ind_dela_fin_ult1", "ind_ecue_fin_ult1", "ind_fond_fin_ult1",
+          "ind_hip_fin_ult1", "ind_plan_fin_ult1", "ind_pres_fin_ult1",
+          "ind_reca_fin_ult1", "ind_tjcr_fin_ult1", "ind_valo_fin_ult1",
+          "ind_viv_fin_ult1", "ind_nomina_ult1", "ind_nom_pens_ult1",
+          "ind_recibo_ult1"]
+
+def next_date(year, month):
+    """
+    get next year-month from current one, ex: 2015-12 -> 2016-01
+    """
+    month = int(month)
+    year = int(year)
+    assert year in [2015, 2016]
+    assert 1 <= month <= 12  
+    return {'year': str(year), 'month': "{:02d}".format(month + 1) } \
+           if month < 12 else {'year': str(year + 1), 'month': '01'}
+    
+def additional_products_row(row):
+    
+    
+def additional_products(year, month):
+    next_date = next_date(year, month)
+    df_now = pd.read_csv('data/train/' + "-".join(year, month, '28'),
+                              header=None, names=HEADER, 
+                              usecols=[1]+list(range(24,48)), 
+                              index_col=0)
+    df_next = pd.read_csv('data/train/' + "-".join(next_date['year'], next_date['month'], '28'),
+                              header=None, names=HEADER, 
+                              usecols=[1]+list(range(24,48)), 
+                              index_col=0)
+    df = pd.merge(df_now, df_next, on='ncodpers', how='inner')
+    df['new_products'] = df.apply(lambda row: )
+
+```
