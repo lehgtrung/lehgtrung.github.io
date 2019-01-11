@@ -87,10 +87,12 @@ $$m$$ is the number of added products for the given user at that time point. If 
 ## My Approach
 This is a interesting competition since we have the freedom to how we process the data, extract features and build our model. At first glance, I want to load the whole training data
 to my 8GB RAM machine to do some exploratory analysis. But since the training data was too big to fit to machine memory, I have to think of a more memory efficient way to handle the data.
-Since every row in training data has a unique month, I use a simple shell script to divide the data into several files, each file contains only $$1$$ partitioned month data.
+As every row in training data has a unique month, I use a simple shell script to divide the data into several files, each file contains only $$1$$ partitioned month data.
 
 ```console
-foo@bar:~$ awk -F\, '{print>$1}' train_ver2.csv
+foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv
+foo@bar:~$ mkdir train
+foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv
 ```
-This results in several files like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. For each month, I construct a new file that contains user information and **new** product
+This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. For each month, I construct a new file that contains user information and **new** product
 that they added in the next month.
