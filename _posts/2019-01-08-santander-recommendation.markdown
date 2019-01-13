@@ -20,8 +20,7 @@ products customers will purchase. The data starts at *2015-01-28* and has monthl
 such as "credit card", "savings account", etc. We will predict what additional products a customer will get in the 
 last month, *2016-06-28*, in addition to what they already have at *2016-05-28*. 
 These products are the columns named: *ind_(xyz)_ult1*, which are the columns $$#25 - #48$$ in the training data. 
-We will predict what a customer will buy in addition to what they already had at *2016-05-28*. 
-
+We will predict what a customer will buy **in addition to** what they already had at *2016-05-28*. 
 
 |      Column Name      	| Description                                                                                                                                                                                                      	|
 |:---------------------:	|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
@@ -74,35 +73,51 @@ We will predict what a customer will buy in addition to what they already had at
 | ind_recibo_ult1       	| Direct Debit           
 
 ## Objective
-We are provided with $$1.5$$ years of customer data of Santander Banks from **January 2015** to **May 2015** of nearly $$1$$ million distinct users.
-The goal of this competition is to predict top $$7$$ most likely product that *929,615* customers in the test set would purchase in **June 2016**. The test data 
-is split randomly to public and private set using a 30-70% random split. The public leaderboard is ranked on the public test set whereas 
-the private set is used to calculate the final standings. The scoring was evaluated using *Mean Average Precision* at $$7$$ (MAP@7):
+According to the competition's home page, the scoring was evaluated using *Mean Average Precision* at $$7$$ (MAP@7):
 
-$$\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum_{k=1}^{min(m,7)} P(k) \end{aligned}$$
+$$\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum_{k=1}^{min(n,7)} P(k) \end{aligned}$$
 
 where $$|U|$$ is the number of rows (users in two time points), $$P(k)$$ is the precision at cutoff $$k$$, $$n$$ is the number of predicted products, and 
-$$m$$ is the number of added products for the given user at that time point. If $$m = 0$$, the precision is defined to be $$0$$.
+$$m$$ is the number of added products for the given user at that time point. If $$m = 0$$, the precision is defined to be $$0$$. 
 
-## My Approach
-This is a interesting competition since we have the freedom to how we process the data, extract features and build our model. At first glance, I want to load the whole training data
-to my 8GB RAM machine to do some exploratory analysis. But since the training data was too big to fit to machine memory, I have to think of a more memory efficient way to handle the data.
-As every row in training data has a unique month, I use a simple shell script to divide the data into several files, each file contains only $$1$$ partitioned month data.
+That means you can recommend $$1,2,3,...$$ upto $$7$$ products for every user in test set. Obviously, we should always recommend $$7$$ 
+products since it'll always give us higher score. The intuition behind this scoring metric is that for every product we recommend, the earlier 
+the item is listed, the more point we are rewarded. We don't lose any point for recommending products to users that don't buy anything.
+
+## Approach
+Although there's *"Recommendation"* in the name of the competition, the traditional recommendation methods such as *content-based filtering* 
+or *collaborative filtering* (I will talk about them at the end of this post) are not very applicable in this case. Instead, we can think of the problem as 
+a supervised machine learning task where we have to predict the new products that a user will  buy (the label) **base on** what they already had (the features). There are 
+two strategies (in many strategies) to define such a model:
+* We can build a binary classifier to predict whether a product would be added by the user in next month, regardless of being newly added or not.
+* Or build a multi-class classifier to predict which product will be newly added by the user in next month. If there're many product being newly added, 
+a single product is randomly choosen as the target.
+
+To actually compete with other Kagglers in this competition, you should build some seperated models of both types then the final prediction is the weighted average
+of these models (the weight is tuned and optimized based on a validation set). However, for the purpose of this post, I just follow the second strategies since my 
+original intent is to understand the problem and do some predictive analysis on it and it's also easier for my laptop to handle the data.
+ 
+At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the training data was too big to fit
+ into $$8$$GB RAM memory, I have to think of a more memory efficient way to handle them. As every row in training data has a unique month, 
+I use a simple bash script (you are encouraged to use use bash script to process data if applicable) to divide the data into several files, each file contains 
+only $$1$$ partitioned month data.
 
 ```console
 foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv      # New training data file with header removed
 foo@bar:~$ mkdir train                                          # Make a new folder named train
 foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv    # Gather rows begining with the same pattern which is the date into a file
 ```
-This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. 
-For each month, I construct a new file that contains user information and **new** product that they added in the next month with the 
-following code. 
+This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. As mentioned, we will 
+build a multi-class classifier to predict newly added products, so, for each month, I construct a new file that contains user id and **new** products 
+(products that he/she didn't have this month but next month) with the following code. 
 
 ```python
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
+import csv
 
-HEADER = ["ncodpers", "ind_ahor_fin_ult1", "ind_aval_fin_ult1",
+HEADER = ["fecha_dato", "ncodpers", "ind_ahor_fin_ult1", "ind_aval_fin_ult1",
           "ind_cco_fin_ult1", "ind_cder_fin_ult1", "ind_cno_fin_ult1",
           "ind_ctju_fin_ult1", "ind_ctma_fin_ult1", "ind_ctop_fin_ult1",
           "ind_ctpp_fin_ult1", "ind_deco_fin_ult1", "ind_deme_fin_ult1",
@@ -112,9 +127,9 @@ HEADER = ["ncodpers", "ind_ahor_fin_ult1", "ind_aval_fin_ult1",
           "ind_viv_fin_ult1", "ind_nomina_ult1", "ind_nom_pens_ult1",
           "ind_recibo_ult1"]
 
-def next_date(year, month):
+def get_next_date(year, month):
     """
-    get next year-month from current one, ex: 2015-12 -> 2016-01
+    Get next year-month from current one, ex: 2015-12 -> 2016-01
     """
     month = int(month)
     year = int(year)
@@ -123,20 +138,38 @@ def next_date(year, month):
     return {'year': str(year), 'month': "{:02d}".format(month + 1) } \
            if month < 12 else {'year': str(year + 1), 'month': '01'}
     
-def additional_products_row(row):
+def get_additional_products(df):
+    additional_products = []
+    for _, row in tqdm(df.iterrows()):
+        for product in HEADER[2:]:
+            x, y = int(row[product + '_x']), int(row[product + '_y'])
+            if y == 1 and x == 0:
+                additional_products.append((row['fecha_dato_y'], row['ncodpers'], product))
+    return additional_products
     
+def get_additional_products_monthly(year, month):
+    future = get_next_date(year, month)
+    df_present = pd.read_csv('../data/train/' + "-".join([year, month, '28']),
+                              header=None, names=HEADER, 
+                              usecols=[0, 1]+list(range(24,48)))
+    df_future = pd.read_csv('../data/train/' + "-".join([future['year'], future['month'], '28']),
+                              header=None, names=HEADER, 
+                              usecols=[0, 1]+list(range(24,48)))
+    df = pd.merge(df_present, df_future, on='ncodpers', how='inner')
+    df.fillna(0, inplace=True)
+    return get_additional_products(df)
     
-def additional_products(year, month):
-    next_date = next_date(year, month)
-    df_now = pd.read_csv('data/train/' + "-".join(year, month, '28'),
-                              header=None, names=HEADER, 
-                              usecols=[1]+list(range(24,48)), 
-                              index_col=0)
-    df_next = pd.read_csv('data/train/' + "-".join(next_date['year'], next_date['month'], '28'),
-                              header=None, names=HEADER, 
-                              usecols=[1]+list(range(24,48)), 
-                              index_col=0)
-    df = pd.merge(df_now, df_next, on='ncodpers', how='inner')
-    df['new_products'] = df.apply(lambda row: )
-
+def to_csv(my_list, file_path):
+    with open(file_path, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerows(my_list)
+            
+dates = [(2015, "{:02d}".format(month)) for month in range(1, 12)] + \
+        [(2016, "{:02d}".format(month)) for month in range(1, 4)]
+for year, month in dates:
+    additional_products = get_additional_products_monthly(year, month)
+    to_csv(additional_products, '../data/train/additional-' + "-".join([year, month, '28']))
 ```
+
+
+
