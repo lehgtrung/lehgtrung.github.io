@@ -93,8 +93,8 @@ two strategies (in many strategies) to define such a model:
 * Or build a multi-class classifier to predict which product will be newly added by the user in next month. If there're many product being newly added, 
 a single product is randomly choosen as the target.
 
-To actually compete with other Kagglers in this competition, you should build some seperated models of both types then the final prediction is the weighted average
-of these models (the weight is tuned and optimized based on a validation set). However, for the purpose of this post, I just follow the second strategies since my 
+To actually compete with other Kagglers in this competition, you should build some seperated models of both types then compute the weighted average
+of these models (the weight is tuned and optimized based on a validation set) to get the final prediction. However, for the purpose of this post, I just follow the second strategies since my 
 original intent is to understand the problem and do some predictive analysis on it and it's also easier for my laptop to handle the data.
  
 At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the training data was too big to fit
