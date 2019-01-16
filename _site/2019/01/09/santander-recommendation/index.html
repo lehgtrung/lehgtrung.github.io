@@ -294,44 +294,50 @@ We will predict what a customer will buy <strong>in addition to</strong> what th
 </table>
 
 <h2 id="objective">Objective</h2>
-<p>According to the competition’s home page, the scoring was evaluated using <em>Mean Average Precision</em> at <script type="math/tex">7</script> (MAP@7):</p>
+<p>Specifically, the challenge was to recommend top <script type="math/tex">7</script> products to each user in the test data. Recommendation was
+evaluated using the <em>Mean Average Precision</em> at <script type="math/tex">7</script> (MAP@7):</p>
 
 <script type="math/tex; mode=display">\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum_{k=1}^{min(n,7)} P(k) \end{aligned}</script>
 
-<p>where <script type="math/tex">|U|</script> is the number of rows (users in two time points), <script type="math/tex">P(k)</script> is the precision at cutoff <script type="math/tex">k</script>, <script type="math/tex">n</script> is the number of predicted products, and 
-<script type="math/tex">m</script> is the number of added products for the given user at that time point. If <script type="math/tex">m = 0</script>, the precision is defined to be <script type="math/tex">0</script>.</p>
+<p>where <script type="math/tex">|U|</script> is the number of rows (users in two time points), <script type="math/tex">P(k)</script> is the precision at cutoff <script type="math/tex">k</script>, <script type="math/tex">n</script> is the 
+number of predicted products, and  <script type="math/tex">m</script> is the number of added products for the given user at that time point. 
+If <script type="math/tex">m = 0</script>, the precision is defined to be <script type="math/tex">0</script>.</p>
 
-<p>That means you can recommend <script type="math/tex">1,2,3,...</script> upto <script type="math/tex">7</script> products for every user in test set. Obviously, we should always recommend <script type="math/tex">7</script> 
-products since it’ll always give us higher score. The intuition behind this scoring metric is that for every product we recommend, the earlier 
-the item is listed, the more point we are rewarded. We don’t lose any point for recommending products to users that don’t buy anything.</p>
+<p>The intuition behind this scoring metric is that for every product we recommend and actually being bought by the user, 
+the earlier the product is listed, the more point we are rewarded. We don’t lose any point for recommending products to 
+users that don’t buy anything.</p>
 
 <h2 id="approach">Approach</h2>
-<p>Although there’s <em>“Recommendation”</em> in the name of the competition, the traditional recommendation methods such as <em>content-based filtering</em> 
-or <em>collaborative filtering</em> (I will talk about them at the end of this post) are not very applicable in this case. Instead, we can think of the problem as 
-a supervised machine learning task where we have to predict the new products that a user will  buy (the label) <strong>base on</strong> what they already had (the features). There are 
-two strategies (in many strategies) to define such a model:</p>
+
+<p>The original requirement was to recommend <strong>addtional</strong> products that customers would buy in June, <script type="math/tex">2016</script>, a product is
+considered to be additional if it is owned in June <script type="math/tex">2016</script> but not in May <script type="math/tex">2016</script>. Given training data, I wanna
+build a machine learning model to learn a mapping from customer data to products that they would newly own in the month
+followed. From here, we’ve got <script type="math/tex">2</script> strategies to build such a model:</p>
 <ul>
-  <li>We can build a binary classifier to predict whether a product would be added by the user in next month, regardless of being newly added or not.</li>
-  <li>Or build a multi-class classifier to predict which product will be newly added by the user in next month. If there’re many product being newly added, 
-a single product is randomly choosen as the target.</li>
+  <li>By a binary classifier that classify whether a product would be owned in the next month, regardless of being
+newly owned or not.</li>
+  <li>By a multi-class classifier that predict which product would be newly owned in the next month. If several products
+being owned, we would choose a random one as our label.</li>
 </ul>
 
-<p>To actually compete with other Kagglers in this competition, you should build some seperated models of both types then compute the weighted average
-of these models (the weight is tuned and optimized based on a validation set) to get the final prediction. However, for the purpose of this post, I just follow the second strategies since my 
-original intent is to understand the problem and do some predictive analysis on it and it’s also easier for my laptop to handle the data.</p>
+<p>Both of those models output the probability of being newly bought by a user for each product which can be used as 
+a score to rank <script type="math/tex">24</script> products. We can build many models of both types and do an ensemble to obtain the final results.
+However, in this post, I select the second type as my primary model since it require less computing power which is limited
+on my computer.</p>
 
-<p>At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the training data was too big to fit
- into <script type="math/tex">8</script>GB RAM memory, I have to think of a more memory efficient way to handle them. As every row in training data has a unique month, 
-I use a simple bash script (you are encouraged to use use bash script to process data if applicable) to divide the data into several files, each file contains 
-only <script type="math/tex">1</script> partitioned month data.</p>
+<p>At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the 
+training data was too big to fit into <script type="math/tex">8</script>GB RAM memory, I have to think of a more memory efficient way to handle them. 
+As every row in training data has a unique month, I use a simple bash script to divide the data into several files, 
+each file contains only <script type="math/tex">1</script> partitioned month data.</p>
 
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">foo@bar:~$</span> tail <span class="nt">-n</span> +2 train_ver2.csv <span class="o">&gt;</span> train_no_header.csv      <span class="c"># New training data file with header removed</span>
 <span class="gp">foo@bar:~$</span> mkdir train                                          <span class="c"># Make a new folder named train</span>
-<span class="gp">foo@bar:~$</span> awk <span class="nt">-F</span><span class="se">\,</span> <span class="s1">'{print&gt;"train/"$1}'</span> train_no_header.csv    <span class="c"># Gather rows begining with the same pattern which is the date into a file</span>
+<span class="gp">foo@bar:~$</span> awk <span class="nt">-F</span><span class="se">\,</span> <span class="s1">'{print&gt;"train/"$1}'</span> train_no_header.csv    <span class="c"># Gather rows begining with the same pattern which is the date into a file, use gawk if u are on OSX</span>
 </code></pre></div></div>
-<p>This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. As mentioned, we will 
-build a multi-class classifier to predict newly added products, so, for each month, I construct a new file that contains user id and <strong>new</strong> products 
-(products that he/she didn’t have this month but next month) with the following code.</p>
+<p>This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from 
+Jan <script type="math/tex">2015</script> and so on. As mentioned, we will build a multi-class classifier to predict newly added products, so, 
+for each month, I construct a new file that contains user id and <strong>new</strong> products (products that he/she didn’t have this
+ month but next month) with the following code.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
@@ -391,6 +397,10 @@ build a multi-class classifier to predict newly added products, so, for each mon
     <span class="n">additional_products</span> <span class="o">=</span> <span class="n">get_additional_products_monthly</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span>
     <span class="n">to_csv</span><span class="p">(</span><span class="n">additional_products</span><span class="p">,</span> <span class="s">'../data/train/additional-'</span> <span class="o">+</span> <span class="s">"-"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="s">'28'</span><span class="p">]))</span>
 </code></pre></div></div>
+<p>After this phrase, I’ve got <script type="math/tex">14</script> files named <code>additional-x-y-28</code> where <script type="math/tex">x,y</script> are year and months with 
+respect to year and month from training data. Each file contains around <script type="math/tex">32,000</script> lines which is just <script type="math/tex">1/10</script> comparing
+  with the original monthly data. Next, I want to do some exploratory analysis on this reduced data files to understand 
+  the data and find new features that help.</p>
 
 
   </article>

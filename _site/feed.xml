@@ -5,8 +5,8 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 14 Jan 2019 10:50:37 +0700</pubDate>
-    <lastBuildDate>Mon, 14 Jan 2019 10:50:37 +0700</lastBuildDate>
+    <pubDate>Thu, 17 Jan 2019 01:36:55 +0700</pubDate>
+    <lastBuildDate>Thu, 17 Jan 2019 01:36:55 +0700</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
@@ -237,44 +237,50 @@ We will predict what a customer will buy &lt;strong&gt;in addition to&lt;/strong
 &lt;/table&gt;
 
 &lt;h2 id=&quot;objective&quot;&gt;Objective&lt;/h2&gt;
-&lt;p&gt;According to the competition’s home page, the scoring was evaluated using &lt;em&gt;Mean Average Precision&lt;/em&gt; at &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; (MAP@7):&lt;/p&gt;
+&lt;p&gt;Specifically, the challenge was to recommend top &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; products to each user in the test data. Recommendation was
+evaluated using the &lt;em&gt;Mean Average Precision&lt;/em&gt; at &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; (MAP@7):&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum_{k=1}^{min(n,7)} P(k) \end{aligned}&lt;/script&gt;
 
-&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;|U|&lt;/script&gt; is the number of rows (users in two time points), &lt;script type=&quot;math/tex&quot;&gt;P(k)&lt;/script&gt; is the precision at cutoff &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; is the number of predicted products, and 
-&lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; is the number of added products for the given user at that time point. If &lt;script type=&quot;math/tex&quot;&gt;m = 0&lt;/script&gt;, the precision is defined to be &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;.&lt;/p&gt;
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;|U|&lt;/script&gt; is the number of rows (users in two time points), &lt;script type=&quot;math/tex&quot;&gt;P(k)&lt;/script&gt; is the precision at cutoff &lt;script type=&quot;math/tex&quot;&gt;k&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; is the 
+number of predicted products, and  &lt;script type=&quot;math/tex&quot;&gt;m&lt;/script&gt; is the number of added products for the given user at that time point. 
+If &lt;script type=&quot;math/tex&quot;&gt;m = 0&lt;/script&gt;, the precision is defined to be &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;.&lt;/p&gt;
 
-&lt;p&gt;That means you can recommend &lt;script type=&quot;math/tex&quot;&gt;1,2,3,...&lt;/script&gt; upto &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; products for every user in test set. Obviously, we should always recommend &lt;script type=&quot;math/tex&quot;&gt;7&lt;/script&gt; 
-products since it’ll always give us higher score. The intuition behind this scoring metric is that for every product we recommend, the earlier 
-the item is listed, the more point we are rewarded. We don’t lose any point for recommending products to users that don’t buy anything.&lt;/p&gt;
+&lt;p&gt;The intuition behind this scoring metric is that for every product we recommend and actually being bought by the user, 
+the earlier the product is listed, the more point we are rewarded. We don’t lose any point for recommending products to 
+users that don’t buy anything.&lt;/p&gt;
 
 &lt;h2 id=&quot;approach&quot;&gt;Approach&lt;/h2&gt;
-&lt;p&gt;Although there’s &lt;em&gt;“Recommendation”&lt;/em&gt; in the name of the competition, the traditional recommendation methods such as &lt;em&gt;content-based filtering&lt;/em&gt; 
-or &lt;em&gt;collaborative filtering&lt;/em&gt; (I will talk about them at the end of this post) are not very applicable in this case. Instead, we can think of the problem as 
-a supervised machine learning task where we have to predict the new products that a user will  buy (the label) &lt;strong&gt;base on&lt;/strong&gt; what they already had (the features). There are 
-two strategies (in many strategies) to define such a model:&lt;/p&gt;
+
+&lt;p&gt;The original requirement was to recommend &lt;strong&gt;addtional&lt;/strong&gt; products that customers would buy in June, &lt;script type=&quot;math/tex&quot;&gt;2016&lt;/script&gt;, a product is
+considered to be additional if it is owned in June &lt;script type=&quot;math/tex&quot;&gt;2016&lt;/script&gt; but not in May &lt;script type=&quot;math/tex&quot;&gt;2016&lt;/script&gt;. Given training data, I wanna
+build a machine learning model to learn a mapping from customer data to products that they would newly own in the month
+followed. From here, we’ve got &lt;script type=&quot;math/tex&quot;&gt;2&lt;/script&gt; strategies to build such a model:&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;We can build a binary classifier to predict whether a product would be added by the user in next month, regardless of being newly added or not.&lt;/li&gt;
-  &lt;li&gt;Or build a multi-class classifier to predict which product will be newly added by the user in next month. If there’re many product being newly added, 
-a single product is randomly choosen as the target.&lt;/li&gt;
+  &lt;li&gt;By a binary classifier that classify whether a product would be owned in the next month, regardless of being
+newly owned or not.&lt;/li&gt;
+  &lt;li&gt;By a multi-class classifier that predict which product would be newly owned in the next month. If several products
+being owned, we would choose a random one as our label.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;To actually compete with other Kagglers in this competition, you should build some seperated models of both types then compute the weighted average
-of these models (the weight is tuned and optimized based on a validation set) to get the final prediction. However, for the purpose of this post, I just follow the second strategies since my 
-original intent is to understand the problem and do some predictive analysis on it and it’s also easier for my laptop to handle the data.&lt;/p&gt;
+&lt;p&gt;Both of those models output the probability of being newly bought by a user for each product which can be used as 
+a score to rank &lt;script type=&quot;math/tex&quot;&gt;24&lt;/script&gt; products. We can build many models of both types and do an ensemble to obtain the final results.
+However, in this post, I select the second type as my primary model since it require less computing power which is limited
+on my computer.&lt;/p&gt;
 
-&lt;p&gt;At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the training data was too big to fit
- into &lt;script type=&quot;math/tex&quot;&gt;8&lt;/script&gt;GB RAM memory, I have to think of a more memory efficient way to handle them. As every row in training data has a unique month, 
-I use a simple bash script (you are encouraged to use use bash script to process data if applicable) to divide the data into several files, each file contains 
-only &lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt; partitioned month data.&lt;/p&gt;
+&lt;p&gt;At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the 
+training data was too big to fit into &lt;script type=&quot;math/tex&quot;&gt;8&lt;/script&gt;GB RAM memory, I have to think of a more memory efficient way to handle them. 
+As every row in training data has a unique month, I use a simple bash script to divide the data into several files, 
+each file contains only &lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt; partitioned month data.&lt;/p&gt;
 
 &lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; tail &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; +2 train_ver2.csv &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; train_no_header.csv      &lt;span class=&quot;c&quot;&gt;# New training data file with header removed&lt;/span&gt;
 &lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; mkdir train                                          &lt;span class=&quot;c&quot;&gt;# Make a new folder named train&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; awk &lt;span class=&quot;nt&quot;&gt;-F&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'{print&amp;gt;&quot;train/&quot;$1}'&lt;/span&gt; train_no_header.csv    &lt;span class=&quot;c&quot;&gt;# Gather rows begining with the same pattern which is the date into a file&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;foo@bar:~$&lt;/span&gt; awk &lt;span class=&quot;nt&quot;&gt;-F&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'{print&amp;gt;&quot;train/&quot;$1}'&lt;/span&gt; train_no_header.csv    &lt;span class=&quot;c&quot;&gt;# Gather rows begining with the same pattern which is the date into a file, use gawk if u are on OSX&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;This results in several files in &lt;code&gt;train&lt;/code&gt; folder like: &lt;code&gt;2015-01-28&lt;/code&gt; which contains data from Jan 2015 and so on. As mentioned, we will 
-build a multi-class classifier to predict newly added products, so, for each month, I construct a new file that contains user id and &lt;strong&gt;new&lt;/strong&gt; products 
-(products that he/she didn’t have this month but next month) with the following code.&lt;/p&gt;
+&lt;p&gt;This results in several files in &lt;code&gt;train&lt;/code&gt; folder like: &lt;code&gt;2015-01-28&lt;/code&gt; which contains data from 
+Jan &lt;script type=&quot;math/tex&quot;&gt;2015&lt;/script&gt; and so on. As mentioned, we will build a multi-class classifier to predict newly added products, so, 
+for each month, I construct a new file that contains user id and &lt;strong&gt;new&lt;/strong&gt; products (products that he/she didn’t have this
+ month but next month) with the following code.&lt;/p&gt;
 
 &lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pandas&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;
 &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;
@@ -334,6 +340,10 @@ build a multi-class classifier to predict newly added products, so, for each mon
     &lt;span class=&quot;n&quot;&gt;additional_products&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;get_additional_products_monthly&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;to_csv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;additional_products&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'../data/train/additional-'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;-&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'28'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;After this phrase, I’ve got &lt;script type=&quot;math/tex&quot;&gt;14&lt;/script&gt; files named &lt;code&gt;additional-x-y-28&lt;/code&gt; where &lt;script type=&quot;math/tex&quot;&gt;x,y&lt;/script&gt; are year and months with 
+respect to year and month from training data. Each file contains around &lt;script type=&quot;math/tex&quot;&gt;32,000&lt;/script&gt; lines which is just &lt;script type=&quot;math/tex&quot;&gt;1/10&lt;/script&gt; comparing
+  with the original monthly data. Next, I want to do some exploratory analysis on this reduced data files to understand 
+  the data and find new features that help.&lt;/p&gt;
 
 </description>
         <pubDate>Wed, 09 Jan 2019 18:00:00 +0700</pubDate>

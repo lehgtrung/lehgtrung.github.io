@@ -73,43 +73,49 @@ We will predict what a customer will buy **in addition to** what they already ha
 | ind_recibo_ult1       	| Direct Debit           
 
 ## Objective
-According to the competition's home page, the scoring was evaluated using *Mean Average Precision* at $$7$$ (MAP@7):
+Specifically, the challenge was to recommend top $$7$$ products to each user in the test data. Recommendation was
+evaluated using the *Mean Average Precision* at $$7$$ (MAP@7):
 
 $$\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum_{k=1}^{min(n,7)} P(k) \end{aligned}$$
 
-where $$|U|$$ is the number of rows (users in two time points), $$P(k)$$ is the precision at cutoff $$k$$, $$n$$ is the number of predicted products, and 
-$$m$$ is the number of added products for the given user at that time point. If $$m = 0$$, the precision is defined to be $$0$$. 
+where $$|U|$$ is the number of rows (users in two time points), $$P(k)$$ is the precision at cutoff $$k$$, $$n$$ is the 
+number of predicted products, and  $$m$$ is the number of added products for the given user at that time point. 
+If $$m = 0$$, the precision is defined to be $$0$$. 
 
-That means you can recommend $$1,2,3,...$$ upto $$7$$ products for every user in test set. Obviously, we should always recommend $$7$$ 
-products since it'll always give us higher score. The intuition behind this scoring metric is that for every product we recommend, the earlier 
-the item is listed, the more point we are rewarded. We don't lose any point for recommending products to users that don't buy anything.
+The intuition behind this scoring metric is that for every product we recommend and actually being bought by the user, 
+the earlier the product is listed, the more point we are rewarded. We don't lose any point for recommending products to 
+users that don't buy anything.
 
 ## Approach
-Although there's *"Recommendation"* in the name of the competition, the traditional recommendation methods such as *content-based filtering* 
-or *collaborative filtering* (I will talk about them at the end of this post) are not very applicable in this case. Instead, we can think of the problem as 
-a supervised machine learning task where we have to predict the new products that a user will  buy (the label) **base on** what they already had (the features). There are 
-two strategies (in many strategies) to define such a model:
-* We can build a binary classifier to predict whether a product would be added by the user in next month, regardless of being newly added or not.
-* Or build a multi-class classifier to predict which product will be newly added by the user in next month. If there're many product being newly added, 
-a single product is randomly choosen as the target.
 
-To actually compete with other Kagglers in this competition, you should build some seperated models of both types then compute the weighted average
-of these models (the weight is tuned and optimized based on a validation set) to get the final prediction. However, for the purpose of this post, I just follow the second strategies since my 
-original intent is to understand the problem and do some predictive analysis on it and it's also easier for my laptop to handle the data.
- 
-At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the training data was too big to fit
- into $$8$$GB RAM memory, I have to think of a more memory efficient way to handle them. As every row in training data has a unique month, 
-I use a simple bash script (you are encouraged to use use bash script to process data if applicable) to divide the data into several files, each file contains 
-only $$1$$ partitioned month data.
+The original requirement was to recommend **addtional** products that customers would buy in June, $$2016$$, a product is
+considered to be additional if it is owned in June $$2016$$ but not in May $$2016$$. Given training data, I wanna
+build a machine learning model to learn a mapping from customer data to products that they would newly own in the month
+followed. From here, we've got $$2$$ strategies to build such a model:
+* By a binary classifier that classify whether a product would be owned in the next month, regardless of being
+newly owned or not.
+* By a multi-class classifier that predict which product would be newly owned in the next month. If several products
+being owned, we would choose a random one as our label.
+
+Both of those models output the probability of being newly bought by a user for each product which can be used as 
+a score to rank $$24$$ products. We can build many models of both types and do an ensemble to obtain the final results.
+However, in this post, I select the second type as my primary model since it require less computing power which is limited
+on my computer.
+
+At first glance, I want to load the whole training data to my machine to do some exploratory analysis. But since the 
+training data was too big to fit into $$8$$GB RAM memory, I have to think of a more memory efficient way to handle them. 
+As every row in training data has a unique month, I use a simple bash script to divide the data into several files, 
+each file contains only $$1$$ partitioned month data.
 
 ```console
 foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv      # New training data file with header removed
 foo@bar:~$ mkdir train                                          # Make a new folder named train
-foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv    # Gather rows begining with the same pattern which is the date into a file
+foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv    # Gather rows begining with the same pattern which is the date into a file, use gawk if u are on OSX
 ```
-This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from Jan 2015 and so on. As mentioned, we will 
-build a multi-class classifier to predict newly added products, so, for each month, I construct a new file that contains user id and **new** products 
-(products that he/she didn't have this month but next month) with the following code. 
+This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from 
+Jan $$2015$$ and so on. As mentioned, we will build a multi-class classifier to predict newly added products, so, 
+for each month, I construct a new file that contains user id and **new** products (products that he/she didn't have this
+ month but next month) with the following code. 
 
 ```python
 import pandas as pd
@@ -170,6 +176,9 @@ for year, month in dates:
     additional_products = get_additional_products_monthly(year, month)
     to_csv(additional_products, '../data/train/additional-' + "-".join([year, month, '28']))
 ```
-
+After this phrase, I've got $$14$$ files named <code>additional-x-y-28</code> where $$x,y$$ are year and months with 
+respect to year and month from training data. Each file contains around $$32,000$$ lines which is just $$1/10$$ comparing
+  with the original monthly data. Next, I want to do some exploratory analysis on this reduced data files to understand 
+  the data and find new features that help.
 
 
