@@ -54,7 +54,7 @@
       </a>
       <div class="trigger">
         
-          <a class="page-link" href="/about/">About</a>
+          <a class="page-link" href="/about/">About this blog and me</a>
         
           
         
@@ -79,12 +79,44 @@
   </header>
 
   <article class="post-content">
-  <h1 id="contents">Contents</h1>
+  <h3 id="introduction-to-classification">Introduction to classification</h3>
+<p>Classification is one of the most fundamental problem in machine learning. They are also very common in real life systems
+that employ intelligence, such as:</p>
 <ul>
-  <li><a href="#introduction">Introduction</a></li>
+  <li>In mailing system, an email is automatically classified as spam or not spam.</li>
+  <li>In credit scoring, classifying a customer is low-risk or high-risk.</li>
+  <li>In social media analytics, classifying users comments as positive, neural or negative.</li>
+  <li>Modern smart phones cameras detect and classify photos background (into some known background like text, flowers) to 
+beautify the photos.</li>
 </ul>
 
-<h3 id="giới-thiệu-">Giới thiệu <a name="introduction"></a></h3>
+<p align="center">
+<img src="/assets/logistics/classificationgmail.png" width="100%" />
+
+Figure 1.1: Example from gmail web client, emails are automatically categorized to Primary, Social and Promotions.
+</p>
+
+<p>From examples above, An email or a photo is called an instance, data point, or observation,.. it’s 
+,by some way, vectorized to a vector <script type="math/tex">x</script>. Classification is a task of taking an observation and assign it to one of
+ <script type="math/tex">K</script> classes <script type="math/tex">C_k</script> where <script type="math/tex">k=1,..,K</script>. Usually, these classes are disjoint so that each observation is assigned to 
+ one and only one class. For example, an email is classified as spam - not spam or classified as primary - social - 
+ promotions but not spam - social.</p>
+
+<p align="center">
+ <img src="/assets/logistics/classification.png" width="60%" height="60%" />
+ </p>
+<p align="center">
+ Figure 1.2: Geometrically, emails are represented as a point in two dimensions with vertical axis as length and 
+ horizontal axis as number of urls, classes are represented as x/o symbol. The dashed line is called decision boundary 
+ or decision surface.
+ </p>
+
+<p>Today, we are going to learn about the most fundamental model for classification in machine learning called the 
+ <em>Logistic regression</em>. It’s very important to understand this model clearly, since it’s the building block for the 
+ Artificial neural networks which are highly applicable today.</p>
+
+<h3 id="logistic-regression">Logistic regression</h3>
+
 
   </article>
 

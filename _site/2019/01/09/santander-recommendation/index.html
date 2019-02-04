@@ -54,7 +54,7 @@
       </a>
       <div class="trigger">
         
-          <a class="page-link" href="/about/">About</a>
+          <a class="page-link" href="/about/">About this blog and me</a>
         
           
         
@@ -301,7 +301,7 @@ evaluated using the <em>Mean Average Precision</em> at <script type="math/tex">7
 
 <p>where <script type="math/tex">|U|</script> is the number of rows (users in two time points), <script type="math/tex">P(k)</script> is the precision at cutoff <script type="math/tex">k</script>, <script type="math/tex">n</script> is the 
 number of predicted products, and  <script type="math/tex">m</script> is the number of added products for the given user at that time point. 
-If <script type="math/tex">m = 0</script>, the precision is defined to be <script type="math/tex">0</script>.</p>
+If <script type="math/tex">m = 0</script>, the precision is defined to be <script type="math/tex">0</script>. For example, we recommend</p>
 
 <p>The intuition behind this scoring metric is that for every product we recommend and actually being bought by the user, 
 the earlier the product is listed, the more point we are rewarded. We don’t lose any point for recommending products to 
@@ -330,11 +330,11 @@ training data was too big to fit into <script type="math/tex">8</script>GB RAM m
 As every row in training data has a unique month, I use a simple bash script to divide the data into several files, 
 each file contains only <script type="math/tex">1</script> partitioned month data.</p>
 
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">foo@bar:~$</span> tail <span class="nt">-n</span> +2 train_ver2.csv <span class="o">&gt;</span> train_no_header.csv      <span class="c"># New training data file with header removed</span>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">foo@bar:~$</span> <span class="nb">cat </span>train_ver2.csv | sed <span class="s2">"1 d"</span> <span class="o">&gt;</span> train_no_header.csv <span class="c"># New training data file with header removed</span>
 <span class="gp">foo@bar:~$</span> mkdir train                                          <span class="c"># Make a new folder named train</span>
 <span class="gp">foo@bar:~$</span> awk <span class="nt">-F</span><span class="se">\,</span> <span class="s1">'{print&gt;"train/"$1}'</span> train_no_header.csv    <span class="c"># Gather rows begining with the same pattern which is the date into a file, use gawk if u are on OSX</span>
 </code></pre></div></div>
-<p>This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from 
+<p>This results in several files in <code>train</code> folder such as: <code>2015-01-28</code> which contains data from 
 Jan <script type="math/tex">2015</script> and so on. As mentioned, we will build a multi-class classifier to predict newly added products, so, 
 for each month, I construct a new file that contains user id and <strong>new</strong> products (products that he/she didn’t have this
  month but next month) with the following code.</p>
@@ -391,8 +391,8 @@ for each month, I construct a new file that contains user id and <strong>new</st
         <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">my_list</span><span class="p">)</span>
             
-<span class="n">dates</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2015</span><span class="p">,</span> <span class="s">"{:02d}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">month</span><span class="p">))</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">)]</span> <span class="o">+</span> \
-        <span class="p">[(</span><span class="mi">2016</span><span class="p">,</span> <span class="s">"{:02d}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">month</span><span class="p">))</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2015</span><span class="p">,</span> <span class="s">"{:02d}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">month</span><span class="p">))</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span> <span class="o">+</span> \
+        <span class="p">[(</span><span class="mi">2016</span><span class="p">,</span> <span class="s">"{:02d}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">month</span><span class="p">))</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)]</span>
 <span class="k">for</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">dates</span><span class="p">:</span>
     <span class="n">additional_products</span> <span class="o">=</span> <span class="n">get_additional_products_monthly</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span>
     <span class="n">to_csv</span><span class="p">(</span><span class="n">additional_products</span><span class="p">,</span> <span class="s">'../data/train/additional-'</span> <span class="o">+</span> <span class="s">"-"</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="s">'28'</span><span class="p">]))</span>

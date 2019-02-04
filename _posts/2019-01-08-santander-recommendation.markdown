@@ -80,7 +80,7 @@ $$\begin{aligned} MAP@7 = \frac{1}{|U|} \sum_{u=1}^{|U|} \frac{1}{min(m,7)} \sum
 
 where $$|U|$$ is the number of rows (users in two time points), $$P(k)$$ is the precision at cutoff $$k$$, $$n$$ is the 
 number of predicted products, and  $$m$$ is the number of added products for the given user at that time point. 
-If $$m = 0$$, the precision is defined to be $$0$$. 
+If $$m = 0$$, the precision is defined to be $$0$$. For example, we recommend 
 
 The intuition behind this scoring metric is that for every product we recommend and actually being bought by the user, 
 the earlier the product is listed, the more point we are rewarded. We don't lose any point for recommending products to 
@@ -108,11 +108,11 @@ As every row in training data has a unique month, I use a simple bash script to 
 each file contains only $$1$$ partitioned month data.
 
 ```console
-foo@bar:~$ tail -n +2 train_ver2.csv > train_no_header.csv      # New training data file with header removed
+foo@bar:~$ cat train_ver2.csv | sed "1 d" > train_no_header.csv # New training data file with header removed
 foo@bar:~$ mkdir train                                          # Make a new folder named train
 foo@bar:~$ awk -F\, '{print>"train/"$1}' train_no_header.csv    # Gather rows begining with the same pattern which is the date into a file, use gawk if u are on OSX
 ```
-This results in several files in <code>train</code> folder like: <code>2015-01-28</code> which contains data from 
+This results in several files in <code>train</code> folder such as: <code>2015-01-28</code> which contains data from 
 Jan $$2015$$ and so on. As mentioned, we will build a multi-class classifier to predict newly added products, so, 
 for each month, I construct a new file that contains user id and **new** products (products that he/she didn't have this
  month but next month) with the following code. 
@@ -170,8 +170,8 @@ def to_csv(my_list, file_path):
         writer = csv.writer(f)
         writer.writerows(my_list)
             
-dates = [(2015, "{:02d}".format(month)) for month in range(1, 12)] + \
-        [(2016, "{:02d}".format(month)) for month in range(1, 4)]
+dates = [(2015, "{:02d}".format(month)) for month in range(1, 13)] + \
+        [(2016, "{:02d}".format(month)) for month in range(1, 6)]
 for year, month in dates:
     additional_products = get_additional_products_monthly(year, month)
     to_csv(additional_products, '../data/train/additional-' + "-".join([year, month, '28']))

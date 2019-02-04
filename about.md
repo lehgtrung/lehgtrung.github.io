@@ -1,7 +1,10 @@
 ---
 layout: page
-title: About
+title: About this blog and me
 permalink: /about/
 ---
 
-The purpose of this blog is to force myself to write, cause writing is a good way to make sure you really understand what you've learnt and to explore new things.
+The target audience of this blog is myself, I learnt a lot when I wrote these posts. For me, writing is the best way to
+ make sure you really understand what you’ve learnt and to explore new things.
+ 
+ My name is Trung Le, I graduated from Ho Chi Minh University of Science, Vietnam with a major in computer science. 
