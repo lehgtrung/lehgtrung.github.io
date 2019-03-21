@@ -5,9 +5,20 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 19 Feb 2019 19:16:02 +0700</pubDate>
-    <lastBuildDate>Tue, 19 Feb 2019 19:16:02 +0700</lastBuildDate>
+    <pubDate>Thu, 21 Mar 2019 15:28:41 +0700</pubDate>
+    <lastBuildDate>Thu, 21 Mar 2019 15:28:41 +0700</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>Learning From Imbalanced Data</title>
+        <description>
+</description>
+        <pubDate>Wed, 20 Mar 2019 18:00:00 +0700</pubDate>
+        <link>http://localhost:4000/2019/03/20/imbalanced-data/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/03/20/imbalanced-data/</guid>
+        
+        
+      </item>
     
       <item>
         <title>Santander Product Recommendation</title>
@@ -338,60 +349,6 @@ respect to year and month from training data. Each file contains around &lt;scri
         <pubDate>Wed, 09 Jan 2019 18:00:00 +0700</pubDate>
         <link>http://localhost:4000/2019/01/09/santander-recommendation/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/01/09/santander-recommendation/</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Useful Resources for ML Engineer</title>
-        <description>&lt;h3 id=&quot;linear-algebra-and-multivariate-calculus&quot;&gt;Linear Algebra and Multivariate Calculus&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;basic-statistics&quot;&gt;Basic Statistics&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;statistical-learning&quot;&gt;Statistical learning&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;deep-learning&quot;&gt;Deep learning&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;natural-language-processing&quot;&gt;Natural Language Processing&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;software-engineering&quot;&gt;Software Engineering&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;big-data&quot;&gt;Big Data&lt;/h3&gt;
-&lt;ul class=&quot;task-list&quot;&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; /&gt;Mercury&lt;/li&gt;
-  &lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;task-list-item-checkbox&quot; disabled=&quot;disabled&quot; checked=&quot;checked&quot; /&gt;Venus&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;###&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 01 Jan 2019 18:00:00 +0700</pubDate>
-        <link>http://localhost:4000/2019/01/01/useful-resources/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/01/01/useful-resources/</guid>
         
         
       </item>
