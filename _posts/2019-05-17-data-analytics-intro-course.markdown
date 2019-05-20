@@ -55,3 +55,4 @@ Với những vấn đề đã nêu, khoá DA-101 được thiết kế để gi
   
 Các lecture notes sẽ được cung cấp dần theo các đường link bên dưới. Bên cạnh đó, nếu bạn có hứng thú với các khoá học sau của 
 VEF Academy, hãy follow chúng tôi tại VEF Academy (https://fb.com/vefacademy/).
+  * Lecture 1: [place-holder]
