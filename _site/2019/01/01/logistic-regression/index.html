@@ -54,7 +54,7 @@
       </a>
       <div class="trigger">
         
-          <a class="page-link" href="/about/">About this blog and me</a>
+          <a class="page-link" href="/about/">About</a>
         
           
         
@@ -80,8 +80,8 @@
 
   <article class="post-content">
   <h3 id="introduction-to-classification">Introduction to classification</h3>
-<p>Classification is one of the most fundamental problem in machine learning. They are also very common in real life systems
-that employ intelligence, such as:</p>
+<p>Classification is one of the most fundamental problem in machine learning. It is also very common in real 
+life systems, such as:</p>
 <ul>
   <li>In mailing system, an email is automatically classified as spam or not spam.</li>
   <li>In credit scoring, classifying a customer is low-risk or high-risk.</li>
@@ -91,16 +91,17 @@ beautify the photos.</li>
 </ul>
 
 <p align="center">
-<img src="/assets/logistics/classificationgmail.png" width="100%" />
+<img src="/assets/logistics/spamclassification.png" width="100%" />
 
-Figure 1.1: Example from gmail web client, emails are automatically categorized to Primary, Social and Promotions.
+Figure 1.1: Example from gmail web client, spam emails are detected automatically.
 </p>
 
 <p>From examples above, An email or a photo is called an instance, data point, or observation,.. it’s 
-,by some way, vectorized to a vector <script type="math/tex">x</script>. Classification is a task of taking an observation and assign it to one of
+,by some way, vectorized to a vector <script type="math/tex">x</script>. Classification is the task of taking an observation and assign it to one of
  <script type="math/tex">K</script> classes <script type="math/tex">C_k</script> where <script type="math/tex">k=1,..,K</script>. Usually, these classes are disjoint so that each observation is assigned to 
  one and only one class. For example, an email is classified as spam - not spam or classified as primary - social - 
- promotions but not spam - social.</p>
+ promotions but not spam - social. In case the outcome we’d want to predict takes only two possible value,  we call 
+ that <strong>binary classification</strong>; if there is more than 2 classes, the problem is called <strong>multiclass classification</strong>.</p>
 
 <p align="center">
  <img src="/assets/logistics/classification.png" width="60%" height="60%" />
@@ -111,11 +112,29 @@ Figure 1.1: Example from gmail web client, emails are automatically categorized 
  or decision surface.
  </p>
 
-<p>Today, we are going to learn about the most fundamental model for classification in machine learning called the 
+<p>In this blog post, we are going to learn about the most fundamental model for classification in machine learning called the 
  <em>Logistic regression</em>. It’s very important to understand this model clearly, since it’s the building block for the 
  Artificial neural networks which are highly applicable today.</p>
 
 <h3 id="logistic-regression">Logistic regression</h3>
+<p>Before diving into logistic regression, we might ask why not just use linear regression for binary classification problem ? 
+We could assume the two outcome is either <script type="math/tex">0</script> or <script type="math/tex">1</script> (without a loss of generality) and build a regression model on that data. 
+Recall the predicted outcome of linear regression has the form:</p>
+
+<script type="math/tex; mode=display">\hat{y} = w^Tx</script>
+
+<p>Then, if the predicted outcome <script type="math/tex">\hat{y}</script> is greater than a threshold, says <script type="math/tex">0.5</script> then <script type="math/tex">\hat{y} = 1</script>, otherwise <script type="math/tex">0</script>.</p>
+
+<p>What’s the problem with this approach? Recall in linear regression, the output is an approximation of the 
+conditional expectation <script type="math/tex">E[y|x]</script>. With <script type="math/tex">y \in \{0,1\}</script>, <script type="math/tex">\hat{y}</script> becomes an estimation of the probability 
+of <script type="math/tex">1</script> given input vector <script type="math/tex">x</script>: <script type="math/tex">P(y=1|x)</script>. On the other hand, some of our estimates might be beyond 
+the <script type="math/tex">[0, 1]</script> interval making them hard to interpreted as probabilities.</p>
+
+<p>Another drawback of using linear regression for classification is that this method cannot be applied when
+ the number of classes exceeds 2 because we cannot imply the label as <script type="math/tex">1,..,K</script> 
+ for a number of classes <script type="math/tex">K > 2</script>, since the ordering actually matters. 
+ For those reasons, we should a more appropriate method which is natural to solve the problem like
+  the one we are going to study next.</p>
 
 
   </article>
