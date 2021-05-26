@@ -1,10 +1,9 @@
 ---
 layout: page
-title: About
+title: About me
 permalink: /about/
 ---
 
-The target audience of this blog is myself, I learnt a lot when I wrote these posts. For me, writing is the best way to
- make sure you really understand what you’ve learnt and to explore new things.
- 
- 
+I am a first year Ph.D student in Department of Computer Science, New Mexico State University. I am very fortunate to have Prof. Huiping Cao as my advisor.
+
+
