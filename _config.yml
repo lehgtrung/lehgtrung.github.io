@@ -1,10 +1,10 @@
 # Site settings
 title: Trung Le blog
-email: 
-# description: "A computer science enthusiast"
+email: le.hg.trung@gmail.com
+description: "We can only see a short distance ahead, but we can see plenty there that needs to be done. - Alan Turing"
 baseurl: ""
 url: "http://lehgtrung.github.io"
-# twitter_username: trungkak
+# twitter_username:
 github_username:  lehgtrung
 
 # Build settings
