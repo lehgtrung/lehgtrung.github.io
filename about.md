@@ -4,11 +4,10 @@ title: About me
 permalink: /about/
 ---
 <figure>
-    <img style="float: left; margin-right: 0.5cm" src="https://i.imgur.com/qKBvcR6.jpg" width="200" height="200" />
+    <img style="float: left; margin-right: 0.5cm" src="https://i.imgur.com/eUrR1J3.jpeg" width="250" height="200" />
 </figure>
-I am starting my third year of my Ph.D at Department of Computer Science, New Mexico State University. My ongoing 
-researches are related to how to effectively incorporate symbolic knowledge into neural network models to reduce labor 
-costs and make them capable of reasoning with common sense.
+My research interests are in the field of data mining, machine learning and neural-symbolic deep learning.
+I have experience working with social network, graph data and recommendation systems.
 
 I graduated from Ho Chi Minh University of Science, Vietnam with a degree in computer science. I had about 1.5 years working as research engineer at [Trusting Social](https://trustingsocial.com/).
 
