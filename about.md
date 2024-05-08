@@ -4,7 +4,7 @@ title: About me
 permalink: /about/
 ---
 <figure>
-    <img style="float: left; margin-right: 0.5cm" src="https://i.imgur.com/eUrR1J3.jpeg" width="250" height="200" />
+    <img style="float: left; margin-right: 0.5cm" src="https://i.imgur.com/eUrR1J3.jpeg" width="300" height="250" />
 </figure>
 My research interests are in the field of data mining and neural-symbolic machine learning.
 I have experience working with social network, graph data and recommendation systems.
